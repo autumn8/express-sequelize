@@ -1,56 +1,79 @@
-const uuidv4 = require('uuid/v4');
 const express = require("express");
 const bodyParser = require("body-parser");
+const sequelize = require('./db');
+const Post = require('./models/post');
 const app = express();
 const port = 3203;
 
 app.use(bodyParser.json());
 
-const posts = [
-  {
-    title:'Post1',
-    content: 'Post 1 Content'   ,
-    id: uuidv4() 
-  },
-  {
-    title:'Post2',
-    content: 'Post 2 Content',
-    id: uuidv4() 
-  },
-  {
-    title:'Post3',
-    content: 'Post 3 Content',
-    id: uuidv4()
-  }
-];
-
-//CREATE
-app.post('/posts', (req, res)=> {
-  const post = req.body;
-  post.id = uuidv4();
-  posts.push(post);    
-  return res.status(200).json(posts[posts.length-1]);
+// create post
+app.post('/posts', (req, res)=> {  
+  Post.create({
+    title: req.body.title,
+    content: req.body.content
+  })
+  .then(post => res.status(200).json(post))
+  .catch(err => res.status(200).send({error: err}));  
 });
 
-//READ
-app.get('/posts', (req, res)=> res.status(200).json(posts));
-app.get('/post/:id', (req, res)=> res.status(200).json(posts[req.params.id]));
-app.put('/post/:id', (req, res) => { 
-  const updatedPost = req.body;  
-  const postIndex = posts.findIndex(post => post.id === req.params.id);   
-  if (postIndex == -1) return res.status(500).send({error: "Post not found"}); 
-  posts[postIndex] = updatedPost;
-  return res.status(200).json(posts[postIndex]);
-});  
-
-app.delete('/post/:id', (req, res) => {  
-  const postIndex = posts.findIndex(post => post.id === req.params.id);   
-  if (postIndex == -1) return res.status(500).send({error: "Post not found"});  
-  const deletedPost = posts.splice(postIndex, 1);  
-  return res.status(200).json(deletedPost[0]);
+// get posts
+app.get('/posts', (req, res) => {
+  Post.findAll()
+  .then(posts => res.status(200).json(posts))
+  .catch(err => console.log(err));  
 });
 
-app.listen(port, ()=> console.log(`listening on ${port}`));
+// get post by id
+app.get('/posts/:id', (req, res) => {
+  Post.findByPk(req.params.id)
+  .then(post => res.status(200).json(post))
+  .catch(err => console.log(err));  
+});
+
+// update post by id
+app.put('/posts/:id', (req, res) => {
+  const { title, content} = req.body;
+  const  id  = req.params.id; 
+  console.log(title, content, id);
+  Post.findByPk(id)
+  .then(post => {
+    Object.assign(post, {title, content});
+    return post.save();    
+  })
+  .then(result => {
+    console.log(result);
+    res.status(200).send(post);
+  })
+  .catch(err => res.status(500).send({error: "Post not found"}));  
+}); 
+
+// delete post
+app.delete('/posts/:id', (req, res) => {  
+  const { id } = req.params;
+  Post.findByPk(id)
+  .then(post => {    
+    post.destroy();    
+  })
+  .then(result => {
+    console.log(result);
+    res.status(200).send({success: true});
+  })
+  .catch(err => res.status(500).send({error: "Post not found"}));  
+});
+
+sequelize.sync()
+.then(res => {  
+  console.log('DB RESPONSE');
+  console.log(res);
+  app.listen(port, ()=> console.log(`listening on ${port}`));
+})
+.catch(err => {
+  console.log('ERROR');
+  console.log(err);
+});
+
+
 
 module.exports = app;
 
