@@ -7,7 +7,6 @@ const port = 3203;
 
 app.use(bodyParser.json());
 
-const forceSync = process.env.NODE_ENV == "test";
 sequelize.sync()
 .then(res => {  
   console.log('DB RESPONSE');
@@ -20,7 +19,7 @@ sequelize.sync()
 });
 
 // create post
-app.post('/post', (req, res)=> {  
+app.post('/posts', (req, res)=> {  
   Post.create({
     title: req.body.title,
     content: req.body.content
@@ -37,7 +36,7 @@ app.get('/posts', (req, res) => {
 });
 
 // get post by id
-app.get('/post/:id', (req, res) => {
+app.get('/posts/:id', (req, res) => {
   console.log(req.params.id);  
   Post.findByPk(req.params.id)
   .then(post => {
@@ -48,23 +47,18 @@ app.get('/post/:id', (req, res) => {
 });
 
 // update post by id
-app.put('/post/:id', (req, res) => {
+app.put('/posts/:id', (req, res) => {
   const { title, content} = req.body;
-  const  id  = req.params.id; 
-  console.log(id);
-  console.log(title, content, id);
+  const  id  = req.params.id;   
   Post.update(
-    {
-      title, content
-    },
-    {
-      returning: true,       
-      plain: true,
-      where: {id} 
-    })
+    { title, content},
+    { where: {id}})
   .then( _ => Post.findByPk(id))
-  .then(post => res.status(200).json(post))
-  .catch(err => res.status(500).send({error: "Post not fdfdffound"}));  
+  .then(post => {
+    if (post) return res.status(200).send(post);
+    res.status(500).send({error: "Post not found, unable to update"});
+  })
+  .catch(err => res.status(500).send({error: "Post not found, unable to update"}));  
 }); 
 
 // delete post
@@ -78,7 +72,7 @@ app.delete('/posts/:id', (req, res) => {
     console.log(result);
     res.status(200).send({success: true});
   })
-  .catch(err => res.status(500).send({error: "Post not del found"}));  
+  .catch(err => res.status(500).send({error: "Post not found, unable to delete"}));  
 });
 
 module.exports = app;
