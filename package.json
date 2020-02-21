@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "node app",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "cross-env NODE_ENV=test jest --watch --testTimeout=10000"
   },
   "jest": {
     "testEnvironment": "node",
@@ -16,7 +16,8 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {    
+  "devDependencies": {
+    "cross-env": "^7.0.0",
     "jest": "^25.1.0",
     "supertest": "^4.0.2",
     "uuid": "^3.4.0"

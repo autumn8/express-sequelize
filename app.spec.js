@@ -23,26 +23,26 @@ describe('GET /posts', ()=> {
 
 describe('GET post/:id', () => {
   it('should return status code of 200', async () => {
-    const res = await req.get('/post/0');
+    const res = await req.get('/post/1');
     expect(res.status).toBe(200);
   });
 
   it('should return an object', async () => {
-    const res = await req.get('/post/0');
+    const res = await req.get('/post/1');
     expect(typeof res.body).toBe('object');
   });
 
   it('retrieved post should have title and content properties', async ()=> {
-    const res = await req.get('/post/0');    
+    const res = await req.get('/post/1');    
     expect(res.body).toHaveProperty('title');
     expect(res.body).toHaveProperty('content');
   });
 });
 
 
-describe('POST /posts', () => {
+describe('POST /post', () => {
   it ('should create a post', async ()=> {
-    const res = await req.post('/posts')
+    const res = await req.post('/post')
     .send({
       title: 'New post',
       content: 'New post content'
@@ -58,7 +58,7 @@ describe('POST /posts', () => {
       title: 'New post created',
       content: 'New post content created'
     }
-    const res = await req.post('/posts')
+    const res = await req.post('/post')
     .send(userPost)
     .set('Accept', 'application/json')   
     
@@ -77,9 +77,10 @@ describe('PUT /post/:id', () => {
       content: 'New post content created'
     };   
 
-    const initialPostRes = await req.post('/posts')
+    const initialPostRes = await req.post('/post')
     .send(userPost)
-    .set('Accept', 'application/json');        
+    .set('Accept', 'application/json');  
+    console.log(initialPostRes.body);      
     
     const updatedUserPost =  Object.assign(initialPostRes.body, {
       title: 'Post title updated',
@@ -98,7 +99,7 @@ describe('PUT /post/:id', () => {
       content: 'New post content created'
     };   
 
-    const initialPostRes = await req.post('/posts')
+    const initialPostRes = await req.post('/post')
     .send(userPost)
     .set('Accept', 'application/json');        
     
@@ -151,7 +152,7 @@ describe('PUT /post/:id', () => {
 
 describe('DELETE post/:id', () => {
   it('should delete an existing post', async ()=> {
-    const postsRes = await req.get('/posts');
+    const postsRes = await req.get('/post');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
@@ -161,7 +162,7 @@ describe('DELETE post/:id', () => {
   });
 
   it('should delete an existing post', async ()=> {
-    const postsRes = await req.get('/posts');
+    const postsRes = await req.get('/post');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
@@ -171,7 +172,7 @@ describe('DELETE post/:id', () => {
   });
 
   it('should return the deleted post', async ()=> {
-    const postsRes = await req.get('/posts');
+    const postsRes = await req.get('/post');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
