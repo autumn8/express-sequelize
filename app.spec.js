@@ -12,37 +12,12 @@ describe('GET /posts', ()=> {
     const res = await req.get('/posts');
     expect(Array.isArray(res.body)).toBe(true);
   });
-
-  it ('post should have properties, title & content', async() => {    
-    const res = await req.get('/posts');
-    const postID = Math.floor(Math.random() * res.body.length);
-    expect(res.body[postID]).toHaveProperty('title');
-    expect(res.body[postID]).toHaveProperty('content');
-  })
+ 
 });
 
-describe('GET post/:id', () => {
-  it('should return status code of 200', async () => {
-    const res = await req.get('/post/1');
-    expect(res.status).toBe(200);
-  });
-
-  it('should return an object', async () => {
-    const res = await req.get('/post/1');
-    expect(typeof res.body).toBe('object');
-  });
-
-  it('retrieved post should have title and content properties', async ()=> {
-    const res = await req.get('/post/1');    
-    expect(res.body).toHaveProperty('title');
-    expect(res.body).toHaveProperty('content');
-  });
-});
-
-
-describe('POST /post', () => {
+describe('POST /posts', () => {
   it ('should create a post', async ()=> {
-    const res = await req.post('/post')
+    const res = await req.post('/posts')
     .send({
       title: 'New post',
       content: 'New post content'
@@ -58,7 +33,7 @@ describe('POST /post', () => {
       title: 'New post created',
       content: 'New post content created'
     }
-    const res = await req.post('/post')
+    const res = await req.post('/posts')
     .send(userPost)
     .set('Accept', 'application/json')   
     
@@ -70,6 +45,25 @@ describe('POST /post', () => {
   });
 });
 
+describe('GET post/:id', () => {
+  // TODO update test to get posts, retrieve id from a post and test to see results for id that does exist and one that doesn't exist.
+  it('should return status code of 200', async () => {
+    const res = await req.get('/posts/1');
+    expect(res.status).toBe(200);
+  });
+
+  it('should return an object', async () => {
+    const res = await req.get('/posts/1');
+    expect(typeof res.body).toBe('object');
+  });
+
+  it('retrieved post should have title and content properties', async ()=> {
+    const res = await req.get('/post/1');    
+    expect(res.body).toHaveProperty('title');
+    expect(res.body).toHaveProperty('content');
+  });
+});
+
 describe('PUT /post/:id', () => {
   it ('should update a post and return status code of 200 if post exists', async ()=> {
     const userPost = {
@@ -77,7 +71,7 @@ describe('PUT /post/:id', () => {
       content: 'New post content created'
     };   
 
-    const initialPostRes = await req.post('/post')
+    const initialPostRes = await req.post('/posts')
     .send(userPost)
     .set('Accept', 'application/json');  
     console.log(initialPostRes.body);      
@@ -86,7 +80,7 @@ describe('PUT /post/:id', () => {
       title: 'Post title updated',
       content: 'Post content updated'
     });       
-    const res = await req.put(`/post/${updatedUserPost.id}`)    
+    const res = await req.put(`/posts/${updatedUserPost.id}`)    
     .send(updatedUserPost)
     .set('Accept', 'application/json');        
     expect(res.status).toBe(200);    
@@ -99,7 +93,7 @@ describe('PUT /post/:id', () => {
       content: 'New post content created'
     };   
 
-    const initialPostRes = await req.post('/post')
+    const initialPostRes = await req.post('/posts')
     .send(userPost)
     .set('Accept', 'application/json');        
     
@@ -107,7 +101,7 @@ describe('PUT /post/:id', () => {
       title: 'Post title updated',
       content: 'Post content updated'
     });       
-    const res = await req.put(`/post/${updatedUserPost.id}`)    
+    const res = await req.put(`/posts/${updatedUserPost.id}`)    
     .send(updatedUserPost)
     .set('Accept', 'application/json');  
     const returnedPost = res.body;
@@ -127,7 +121,7 @@ describe('PUT /post/:id', () => {
       id: '234234134'
     };   
     
-    const res = await req.put(`/post/-1`)
+    const res = await req.put(`/posts/-1`)
     .send(userPost)
     .set('Accept', 'application/json');        
 
@@ -141,7 +135,7 @@ describe('PUT /post/:id', () => {
       id: '234234134'
     };   
     
-    const res = await req.put(`/post/-1`)
+    const res = await req.put(`/posts/-1`)
     .send(userPost)
     .set('Accept', 'application/json');        
 
@@ -152,32 +146,32 @@ describe('PUT /post/:id', () => {
 
 describe('DELETE post/:id', () => {
   it('should delete an existing post', async ()=> {
-    const postsRes = await req.get('/post');
+    const postsRes = await req.get('/posts');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
     
-    const res = await req.delete(`/post/${randomPost.id}`);
+    const res = await req.delete(`/posts/${randomPost.id}`);
     expect(res.status).toBe(200);
   });
 
   it('should delete an existing post', async ()=> {
-    const postsRes = await req.get('/post');
+    const postsRes = await req.get('/posts');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
     
-    const res = await req.delete(`/post/${randomPost.id}`);
+    const res = await req.delete(`/posts/${randomPost.id}`);
     expect(res.status).toBe(200);
   });
 
   it('should return the deleted post', async ()=> {
-    const postsRes = await req.get('/post');
+    const postsRes = await req.get('/posts');
     const posts = postsRes.body;
     const randomPostIndex= Math.floor(Math.random() * posts.length);
     const randomPost = posts[randomPostIndex];
     
-    const res = await req.delete(`/post/${randomPost.id}`);
+    const res = await req.delete(`/posts/${randomPost.id}`);
     const returnedPost = res.body;
     expect(returnedPost).toHaveProperty('title');
     expect(returnedPost).toHaveProperty('content');  
