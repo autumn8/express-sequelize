@@ -1,5 +1,5 @@
 # Basic MySQL/Sequelize Rest API 
 
-A simple project to flesh out a basic REST API with mySQL and sequelize ORM, with API testing using Jest & SuperTest.
+A simple express REST API with mySQL and sequelize ORM. API testing - Jest & SuperTest.
 
 
