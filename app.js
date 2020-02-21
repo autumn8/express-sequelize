@@ -25,7 +25,7 @@ app.post('/posts', (req, res)=> {
     content: req.body.content
   })
   .then(post => res.status(200).json(post))
-  .catch(err => res.status(500).send({error: err}));  
+  .catch(err => res.status(500).send({error: 'Unable to retrieve posts'}));  
 });
 
 // get posts
@@ -36,8 +36,7 @@ app.get('/posts', (req, res) => {
 });
 
 // get post by id
-app.get('/posts/:id', (req, res) => {
-  console.log(req.params.id);  
+app.get('/posts/:id', (req, res) => { 
   Post.findByPk(req.params.id)
   .then(post => {
     if (post) return res.status(200).send(post);
@@ -47,13 +46,14 @@ app.get('/posts/:id', (req, res) => {
 });
 
 // update post by id
-app.put('/posts/:id', (req, res) => {
-  const { title, content} = req.body;
-  const  id  = req.params.id;   
+app.put('/posts/:id', (req, res) => {  
   Post.update(
-    { title, content},
-    { where: {id}})
-  .then( _ => Post.findByPk(id))
+    {
+      title: req.body.title,
+      content: req.body.content
+    },
+    { where: {id: req.params.id}})
+  .then( _ => Post.findByPk(req.params.id))
   .then(post => {
     if (post) return res.status(200).send(post);
     res.status(500).send({error: "Post not found, unable to update"});
